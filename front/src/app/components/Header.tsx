@@ -9,6 +9,15 @@ const navLinks = [
   { label: "График работы", href: "#schedule" },
 ];
 
+const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  e.preventDefault();
+  const id = href.replace("#", "");
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth" });
+  }
+};
+
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -44,6 +53,7 @@ export function Header() {
             <a
               key={link.href}
               href={link.href}
+              onClick={(e) => handleNavClick(e, link.href)}
               className="text-sm transition-colors duration-200 hover:opacity-70"
               style={{ color: "#A3B18A" }}
             >
@@ -75,7 +85,10 @@ export function Header() {
               href={link.href}
               className="text-sm py-1 border-b transition-colors duration-200 hover:opacity-70"
               style={{ color: "#A3B18A", borderColor: "#588157" }}
-              onClick={() => setMenuOpen(false)}
+              onClick={(e) => {
+                handleNavClick(e, link.href);
+                setMenuOpen(false);
+              }}
             >
               {link.label}
             </a>

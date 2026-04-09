@@ -1,4 +1,5 @@
 import { Leaf, Truck, Clock, Award } from "lucide-react";
+import { useScrollReveal } from "../hooks/useScrollReveal";
 
 const features = [
   {
@@ -24,8 +25,15 @@ const features = [
 ];
 
 export function AboutUs() {
+  const { ref, style } = useScrollReveal();
+
   return (
-    <section id="about" className="py-20 px-6" style={{ backgroundColor: "#3A5A40" }}>
+    <section
+      ref={ref}
+      id="about"
+      className="py-20 px-6"
+      style={{ backgroundColor: "#3A5A40", ...style }}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Text side */}

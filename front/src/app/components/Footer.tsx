@@ -1,4 +1,5 @@
 import { Leaf, MapPin, Phone, Mail, Instagram, Clock } from "lucide-react";
+import { useScrollReveal } from "../hooks/useScrollReveal";
 
 const schedule = [
   { day: "Понедельник – Пятница", time: "08:00 – 21:00" },
@@ -15,8 +16,10 @@ const navLinks = [
 ];
 
 export function Footer() {
+  const { ref, style } = useScrollReveal();
+
   return (
-    <footer id="contacts" style={{ backgroundColor: "#1e3526", fontFamily: "'Lato', sans-serif" }}>
+    <footer ref={ref} id="contacts" style={{ backgroundColor: "#1e3526", fontFamily: "'Lato', sans-serif", ...style }}>
       {/* Delivery banner */}
       <div id="delivery" style={{ backgroundColor: "#588157" }} className="py-10 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">

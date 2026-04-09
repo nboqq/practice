@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import cvetiImg from "@/img/cveti.png";
 
 const slides = [
   {
     id: 1,
-    image:
-      "https://images.unsplash.com/photo-1758749395541-3f661829d46a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmbG93ZXIlMjBzaG9wJTIwYm91cXVldCUyMGFycmFuZ2VtZW50fGVufDF8fHx8MTc3NTUwMjkxOXww&ixlib=rb-4.1.0&q=80&w=1080",
+    image: cvetiImg,
     title: "Букеты для особых моментов",
     subtitle: "Изысканные цветочные композиции ручной работы",
   },

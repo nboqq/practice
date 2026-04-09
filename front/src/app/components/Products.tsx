@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ShoppingCart, Heart } from "lucide-react";
+import { useScrollReveal } from "../hooks/useScrollReveal";
 
 const products = [
   {
@@ -79,8 +80,15 @@ export function Products() {
     setTimeout(() => setAdded((prev) => prev.filter((x) => x !== id)), 1500);
   };
 
+  const { ref, style } = useScrollReveal();
+
   return (
-    <section id="products" className="py-20 px-6" style={{ backgroundColor: "#DAD7CD" }}>
+    <section
+      ref={ref}
+      id="products"
+      className="py-20 px-6"
+      style={{ backgroundColor: "#DAD7CD", ...style }}
+    >
       <div className="max-w-7xl mx-auto">
         {/* Section Title */}
         <div className="text-center mb-14">
