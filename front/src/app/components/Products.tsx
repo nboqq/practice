@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { ShoppingCart, Heart } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import { useCart } from "../context/CartContext";
 
-const products = [
+const productData = [
   {
     id: 1,
     name: "Красные розы",
     description: "Классический букет из 11 бархатистых красных роз",
     price: "2 490 ₽",
+    priceNum: 2490,
     image:
       "https://images.unsplash.com/photo-1730749387748-79e6d50a269c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyb3NlJTIwYm91cXVldCUyMHJlZCUyMGZsb3dlcnMlMjBnaWZ0fGVufDF8fHx8MTc3NTUwMjkyM3ww&ixlib=rb-4.1.0&q=80&w=400",
     tag: "Хит",
@@ -17,6 +19,7 @@ const products = [
     name: "Пионы",
     description: "Нежный букет из свежих розовых пионов",
     price: "3 200 ₽",
+    priceNum: 3200,
     image:
       "https://images.unsplash.com/photo-1581279073686-b450423d8b7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW9ueSUyMHBpbmslMjBmbG93ZXIlMjBib3VxdWV0JTIwd2VkZGluZ3xlbnwxfHx8fDE3NzU1MDI5Mjd8MA&ixlib=rb-4.1.0&q=80&w=400",
     tag: "Новинка",
@@ -26,6 +29,7 @@ const products = [
     name: "Орхидея белая",
     description: "Элегантная орхидея в декоративном горшке",
     price: "1 890 ₽",
+    priceNum: 1890,
     image:
       "https://images.unsplash.com/photo-1548014251-6c4f4b6055d3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxvcmNoaWQlMjB3aGl0ZSUyMGVsZWdhbnQlMjBmbG93ZXIlMjBwb3R8ZW58MXx8fHwxNzc1NTAyOTI0fDA&ixlib=rb-4.1.0&q=80&w=400",
     tag: "",
@@ -35,6 +39,7 @@ const products = [
     name: "Лаванда Прованс",
     description: "Ароматный букет из свежесрезанной лаванды",
     price: "1 350 ₽",
+    priceNum: 1350,
     image:
       "https://images.unsplash.com/photo-1719264493104-62c8f920e6b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYXZlbmRlciUyMHB1cnBsZSUyMGZsb3dlciUyMGZpZWxkfGVufDF8fHx8MTc3NTUwMjkyNHww&ixlib=rb-4.1.0&q=80&w=400",
     tag: "",
@@ -44,6 +49,7 @@ const products = [
     name: "Суккулент микс",
     description: "Набор из 5 суккулентов в керамических горшках",
     price: "990 ₽",
+    priceNum: 990,
     image:
       "https://images.unsplash.com/photo-1763784436630-629fd9a4e0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdWNjdWxlbnQlMjBjYWN0dXMlMjBwb3R0ZWQlMjBwbGFudHxlbnwxfHx8fDE3NzU1MDI5MjN8MA&ixlib=rb-4.1.0&q=80&w=400",
     tag: "Акция",
@@ -53,6 +59,7 @@ const products = [
     name: "Монстера",
     description: "Крупнолистная монстера — украшение любого интерьера",
     price: "2 100 ₽",
+    priceNum: 2100,
     image:
       "https://images.unsplash.com/photo-1711039131661-b1e336cdda75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25zdGVyYSUyMGxlYWYlMjBncmVlbiUyMGhvdXNlcGxhbnR8ZW58MXx8fHwxNzc1NTAyOTI3fDA&ixlib=rb-4.1.0&q=80&w=400",
     tag: "",
@@ -67,7 +74,10 @@ const tagColors: Record<string, { bg: string; color: string }> = {
 
 export function Products() {
   const [wishlist, setWishlist] = useState<number[]>([]);
-  const [added, setAdded] = useState<number[]>([]);
+  const { addItem, items } = useCart();
+  const { ref, style } = useScrollReveal();
+
+  const inCartIds = new Set(items.map((i) => i.id));
 
   const toggleWish = (id: number) => {
     setWishlist((prev) =>
@@ -75,12 +85,16 @@ export function Products() {
     );
   };
 
-  const handleAdd = (id: number) => {
-    setAdded((prev) => [...prev, id]);
-    setTimeout(() => setAdded((prev) => prev.filter((x) => x !== id)), 1500);
+  const handleAdd = (product: typeof productData[number]) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      priceNum: product.priceNum,
+      image: product.image,
+    });
   };
-
-  const { ref, style } = useScrollReveal();
 
   return (
     <section
@@ -118,7 +132,7 @@ export function Products() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map((product) => (
+          {productData.map((product) => (
             <div
               key={product.id}
               className="group rounded-2xl overflow-hidden flex flex-col"
@@ -209,17 +223,17 @@ export function Products() {
                     {product.price}
                   </span>
                   <button
-                    onClick={() => handleAdd(product.id)}
+                    onClick={() => handleAdd(product)}
                     className="flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all duration-200 hover:scale-105 active:scale-95"
                     style={{
-                      backgroundColor: added.includes(product.id) ? "#A3B18A" : "#588157",
+                      backgroundColor: inCartIds.has(product.id) ? "#A3B18A" : "#588157",
                       color: "#DAD7CD",
                       fontFamily: "'Lato', sans-serif",
                       fontWeight: 700,
                     }}
                   >
                     <ShoppingCart className="w-4 h-4" />
-                    {added.includes(product.id) ? "Добавлено" : "В корзину"}
+                    {inCartIds.has(product.id) ? "Добавлено" : "В корзину"}
                   </button>
                 </div>
               </div>

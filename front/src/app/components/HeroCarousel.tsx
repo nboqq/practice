@@ -2,6 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import cvetiImg from "@/img/cveti.png";
 
+const scrollToProducts = () => {
+  const el = document.getElementById("products");
+  if (el) el.scrollIntoView({ behavior: "smooth" });
+};
+
 const slides = [
   {
     id: 1,
@@ -116,8 +121,8 @@ export function HeroCarousel() {
             >
               {slide.subtitle}
             </p>
-            <a
-              href="#products"
+            <button
+              onClick={scrollToProducts}
               className="mt-8 px-8 py-3 rounded-full text-sm tracking-wide transition-all duration-300 hover:scale-105"
               style={{
                 backgroundColor: "#588157",
@@ -128,7 +133,7 @@ export function HeroCarousel() {
               }}
             >
               Смотреть каталог
-            </a>
+            </button>
           </div>
         </div>
       ))}

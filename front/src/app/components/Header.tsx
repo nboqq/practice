@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Menu, X, Leaf } from "lucide-react";
+import { Menu, X, Leaf, ShoppingCart } from "lucide-react";
+import { Link } from "react-router";
+import { useCart } from "../context/CartContext";
 
 const navLinks = [
   { label: "О нас", href: "#about" },
@@ -18,8 +20,14 @@ const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) =>
   }
 };
 
+const scrollToTop = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  e.preventDefault();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { count } = useCart();
 
   return (
     <header
@@ -28,7 +36,7 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo + Name */}
-        <a href="#" className="flex items-center gap-3 group">
+        <a href="#" onClick={scrollToTop} className="flex items-center gap-3 group">
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: "#588157" }}
@@ -60,17 +68,61 @@ export function Header() {
               {link.label}
             </a>
           ))}
+
+          {/* Cart icon */}
+          <Link
+            to="/cart"
+            className="relative flex items-center justify-center transition-colors duration-200 hover:opacity-70"
+            style={{ color: "#A3B18A" }}
+          >
+            <ShoppingCart className="w-5 h-5" />
+            {count > 0 && (
+              <span
+                className="absolute -top-2 -right-3 flex items-center justify-center rounded-full text-xs font-bold"
+                style={{
+                  backgroundColor: "#DAD7CD",
+                  color: "#3A5A40",
+                  width: 18,
+                  height: 18,
+                }}
+              >
+                {count}
+              </span>
+            )}
+          </Link>
         </nav>
 
-        {/* Mobile hamburger */}
-        <button
-          className="lg:hidden p-2 rounded-md transition"
-          style={{ color: "#DAD7CD" }}
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Меню"
-        >
-          {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        {/* Mobile: cart + hamburger */}
+        <div className="lg:hidden flex items-center gap-3">
+          <Link
+            to="/cart"
+            className="relative flex items-center justify-center"
+            style={{ color: "#DAD7CD" }}
+          >
+            <ShoppingCart className="w-5 h-5" />
+            {count > 0 && (
+              <span
+                className="absolute -top-2 -right-3 flex items-center justify-center rounded-full text-xs font-bold"
+                style={{
+                  backgroundColor: "#DAD7CD",
+                  color: "#3A5A40",
+                  width: 18,
+                  height: 18,
+                }}
+              >
+                {count}
+              </span>
+            )}
+          </Link>
+          <button
+            className="p-2 rounded-md transition"
+            style={{ color: "#DAD7CD" }}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Меню"
+          >
+            {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -93,6 +145,15 @@ export function Header() {
               {link.label}
             </a>
           ))}
+          <Link
+            to="/cart"
+            className="text-sm py-1 border-b transition-colors duration-200 hover:opacity-70 flex items-center gap-2"
+            style={{ color: "#A3B18A", borderColor: "#588157" }}
+            onClick={() => setMenuOpen(false)}
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Корзина ({count})
+          </Link>
         </div>
       )}
     </header>
