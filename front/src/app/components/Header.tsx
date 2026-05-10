@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AccountModal } from "./AccountModal";
 import { Menu, X, Leaf, ShoppingCart } from "lucide-react";
 import { Link } from "react-router";
 import { useCart } from "../context/CartContext";
@@ -28,6 +29,8 @@ const scrollToTop = (e: React.MouseEvent<HTMLAnchorElement>) => {
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { count } = useCart();
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   return (
     <header
@@ -90,7 +93,14 @@ export function Header() {
               </span>
             )}
           </Link>
-        </nav>
+                <a
+          href="#"
+          className="ml-4 text-sm text-[#A3B18A] hover:underline"
+          onClick={(e) => { e.preventDefault(); setAccountOpen(true); }}
+        >
+          {loggedIn ? 'Войти' : 'Регистрация'}
+        </a>
+      </nav>
 
         {/* Mobile: cart + hamburger */}
         <div className="lg:hidden flex items-center gap-3">
@@ -151,11 +161,17 @@ export function Header() {
             style={{ color: "#A3B18A", borderColor: "#588157" }}
             onClick={() => setMenuOpen(false)}
           >
+            <a
+              href="#"
+              className="text-sm text-[#A3B18A] hover:underline ml-2"
+              onClick={(e) => { e.preventDefault(); setAccountOpen(true); setMenuOpen(false); }}
+            >Войти</a>
             <ShoppingCart className="w-4 h-4" />
             Корзина ({count})
           </Link>
         </div>
       )}
+    <AccountModal open={accountOpen} onClose={() => setAccountOpen(false)} onLogin={() => { setLoggedIn(true); setAccountOpen(false); }} />
     </header>
   );
 }

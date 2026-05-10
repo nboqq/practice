@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { cn } from "./utils";
+import flowers from "../img/flowers.json";
 
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -67,7 +68,10 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="card-content"
       className={cn("px-6 [&:last-child]:pb-6", className)}
       {...props}
-    />
+    >
+      {/* Фотография цветка */}
+      <img src={flowers[0]} alt="Flower" className="w-full h-auto rounded-md mt-4" />
+    </div>
   );
 }
 
