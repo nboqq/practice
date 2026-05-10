@@ -1,11 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import cvetiImg from "@/img/cveti.png";
+
+const scrollToProducts = () => {
+  const el = document.getElementById("products");
+  if (el) el.scrollIntoView({ behavior: "smooth" });
+};
 
 const slides = [
   {
     id: 1,
-    image:
-      "https://images.unsplash.com/photo-1758749395541-3f661829d46a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmbG93ZXIlMjBzaG9wJTIwYm91cXVldCUyMGFycmFuZ2VtZW50fGVufDF8fHx8MTc3NTUwMjkxOXww&ixlib=rb-4.1.0&q=80&w=1080",
+    image: cvetiImg,
     title: "Букеты для особых моментов",
     subtitle: "Изысканные цветочные композиции ручной работы",
   },
@@ -116,8 +121,8 @@ export function HeroCarousel() {
             >
               {slide.subtitle}
             </p>
-            <a
-              href="#products"
+            <button
+              onClick={scrollToProducts}
               className="mt-8 px-8 py-3 rounded-full text-sm tracking-wide transition-all duration-300 hover:scale-105"
               style={{
                 backgroundColor: "#588157",
@@ -128,7 +133,7 @@ export function HeroCarousel() {
               }}
             >
               Смотреть каталог
-            </a>
+            </button>
           </div>
         </div>
       ))}
