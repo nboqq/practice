@@ -20,11 +20,11 @@ export function AccountModal({ open, onClose, onLogin }: { open: boolean; onClos
         <button onClick={onClose} className="absolute top-2 right-2 text-muted-foreground">✕</button>
         <div className="flex mb-4 border-b">
           <button
-            className={`flex-1 py-2 ${mode === 'login' ? 'border-b-2 border-[#588157]' : ''}`}
+            className={`flex-1 py-2 cursor-pointer ${mode === 'login' ? 'border-b-2 border-[#588157]' : ''}`}
             onClick={() => setMode('login')}
           >Войти</button>
           <button
-            className={`flex-1 py-2 ${mode === 'register' ? 'border-b-2 border-[#588157]' : ''}`}
+            className={`flex-1 py-2 cursor-pointer ${mode === 'register' ? 'border-b-2 border-[#588157]' : ''}`}
             onClick={() => setMode('register')}
           >Регистрация</button>
         </div>
