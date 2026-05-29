@@ -2,10 +2,70 @@ import { Link } from "react-router";
 import { ArrowLeft, Trash2, Minus, Plus, ShoppingBag } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import { useState } from "react";
 
 export function Cart() {
-  const { items, removeItem, updateQty, clearCart, total, count } = useCart();
+  const { items, removeItem, updateQty, clearCart, total, count, user, isLoggedIn, topupBalance } = useCart();
   const { ref, style } = useScrollReveal();
+  const [showTopupModal, setShowTopupModal] = useState(false);
+  const [topupAmount, setTopupAmount] = useState("1000");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleTopup = async () => {
+    try {
+      setError("");
+      setLoading(true);
+      const amount = parseFloat(topupAmount);
+      if (amount <= 0) {
+        setError("Сумма должна быть больше 0");
+        return;
+      }
+      await topupBalance(amount);
+      setShowTopupModal(false);
+      setTopupAmount("1000");
+    } catch (err: any) {
+      setError(err.message || "Ошибка при пополнении баланса");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6" style={{ backgroundColor: "#DAD7CD" }}>
+        <div className="text-center">
+          <h1
+            className="mb-3"
+            style={{
+              color: "#3A5A40",
+              fontFamily: "'Playfair Display', serif",
+              fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
+              fontWeight: 700,
+            }}
+          >
+            Пожалуйста, войдите
+          </h1>
+          <p className="mb-8" style={{ color: "#588157", fontFamily: "'Lato', sans-serif", fontSize: "1.1rem" }}>
+            Для доступа к корзине необходимо авторизоваться
+          </p>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-sm tracking-wide transition-all duration-300 hover:scale-105"
+            style={{
+              backgroundColor: "#588157",
+              color: "#DAD7CD",
+              fontFamily: "'Lato', sans-serif",
+              fontWeight: 700,
+            }}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            На главную
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -47,7 +107,6 @@ export function Cart() {
   return (
     <div className="min-h-screen py-10 px-6" style={{ backgroundColor: "#DAD7CD" }}>
       <div className="max-w-5xl mx-auto" ref={ref} style={style}>
-        {/* Header */}
         <div className="flex items-center gap-4 mb-10">
           <Link
             to="/"
@@ -125,7 +184,7 @@ export function Cart() {
               {/* Qty controls */}
               <div className="flex items-center gap-3 flex-shrink-0">
                 <button
-                  onClick={() => updateQty(item.id, item.qty - 1)}
+                  onClick={() => updateQty(item.productId, item.qty - 1)}
                   className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
                   style={{ backgroundColor: "#E8F0E8", color: "#3A5A40" }}
                   aria-label="Уменьшить количество"
@@ -139,7 +198,7 @@ export function Cart() {
                   {item.qty}
                 </span>
                 <button
-                  onClick={() => updateQty(item.id, item.qty + 1)}
+                  onClick={() => updateQty(item.productId, item.qty + 1)}
                   className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
                   style={{ backgroundColor: "#E8F0E8", color: "#3A5A40" }}
                   aria-label="Увеличить количество"
@@ -164,7 +223,7 @@ export function Cart() {
 
               {/* Remove */}
               <button
-                onClick={() => removeItem(item.id)}
+                onClick={() => removeItem(item.productId)}
                 className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-110"
                 style={{ backgroundColor: "rgba(163,177,138,0.2)", color: "#A3B18A" }}
                 aria-label="Удалить товар"
@@ -180,6 +239,35 @@ export function Cart() {
           className="mt-10 p-6 rounded-2xl"
           style={{ backgroundColor: "#3A5A40" }}
         >
+          {/* User Balance */}
+          {user && (
+            <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: "#588157" }}>
+              <div className="flex items-center justify-between">
+                <span style={{ color: "#DAD7CD", fontFamily: "'Lato', sans-serif" }}>
+                  Ваш баланс:
+                </span>
+                <span
+                  className="text-lg font-bold"
+                  style={{ color: "#DAD7CD", fontFamily: "'Playfair Display', serif" }}
+                >
+                  ₽{user.balance.toFixed(2)}
+                </span>
+              </div>
+              <button
+                onClick={() => setShowTopupModal(true)}
+                className="w-full mt-3 py-2 rounded-full text-sm transition-all duration-300 hover:scale-[1.02]"
+                style={{
+                  backgroundColor: "#3A5A40",
+                  color: "#DAD7CD",
+                  fontFamily: "'Lato', sans-serif",
+                  fontWeight: 700,
+                }}
+              >
+                Пополнить баланс
+              </button>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-6">
             <span
               className="text-lg"
@@ -215,6 +303,89 @@ export function Cart() {
           </Link>
         </div>
       </div>
+
+      {/* Topup Modal */}
+      {showTopupModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-96 p-6 relative">
+            <button 
+              onClick={() => setShowTopupModal(false)} 
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+            >
+              ✕
+            </button>
+            <h2
+              className="text-xl font-bold mb-4"
+              style={{ color: "#3A5A40", fontFamily: "'Playfair Display', serif" }}
+            >
+              Пополнение баланса
+            </h2>
+
+            {error && <div className="mb-3 p-2 bg-red-100 text-red-700 rounded text-sm">{error}</div>}
+
+            <div className="mb-4">
+              <label
+                className="block text-sm mb-2"
+                style={{ color: "#588157", fontFamily: "'Lato', sans-serif" }}
+              >
+                Выберите сумму:
+              </label>
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                {["500", "1000", "2000", "5000", "10000"].map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => setTopupAmount(amount)}
+                    className="py-2 rounded border-2 transition-all duration-200"
+                    style={{
+                      borderColor: topupAmount === amount ? "#588157" : "#ccc",
+                      backgroundColor: topupAmount === amount ? "#588157" : "transparent",
+                      color: topupAmount === amount ? "#DAD7CD" : "#3A5A40",
+                      fontWeight: topupAmount === amount ? "bold" : "normal",
+                    }}
+                  >
+                    ₽{amount}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <label
+                  className="block text-sm mb-2"
+                  style={{ color: "#588157", fontFamily: "'Lato', sans-serif" }}
+                >
+                  Или введите свою сумму:
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={topupAmount}
+                  onChange={(e) => setTopupAmount(e.target.value)}
+                  className="w-full border-2 px-3 py-2 rounded"
+                  style={{ borderColor: "#588157" }}
+                  placeholder="Введите сумму"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowTopupModal(false)}
+                className="flex-1 py-2 rounded-lg border-2 transition-all duration-200"
+                style={{ borderColor: "#588157", color: "#588157" }}
+              >
+                Отмена
+              </button>
+              <button
+                onClick={handleTopup}
+                disabled={loading}
+                className="flex-1 py-2 rounded-lg text-white transition-all duration-200 disabled:opacity-50"
+                style={{ backgroundColor: "#588157" }}
+              >
+                {loading ? "Загрузка..." : `Пополнить на ₽${topupAmount}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
